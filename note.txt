@@ -1,0 +1,19 @@
+alias viens33=‘vi /etc/sysconfig/network-scripts/ifcfg-ens33’
+unalias viens33
+mysql grant all on *.* to 'test_1'@'localhost' identified by '123456'; 修改test_1密码，测试有效
+mysql SET PASSWORD FOR 'test_1'@'localhost' = PASSWORD('123456789');	修改密码命令2,测试有效
+mysql alter user 'test_1'@'localhost' identified by '123456';	修改密码命令3,测试有效
+mysql desc test; 查询表的字段信息，了解后可以读取想要的信息
+mysql select * from user;	读取所有表的内容，*可改成某些字段，逗号分隔
+
+mysql create table test(id int,name varchar(20));		创建一个表
+mysql insert into test value(3,'tany');		往表内插入信息
+mysql update test set name='jing' where id=3;	修改信息
+mysql delete from test where id = 3;		删除一行
+mysql drop table test;			删除表
+mysql show grants for 'zab'@'127.0.0.1';	查看一个用户的权限
+mysql show grants;			查看当前用户权限；
+mysql select Host,User from user;			查看mysql数据库的user表，显示了用户名和用户应连接的Host
+mysql drop user 'yangxin'@'localhost';		删除用户
+mysql rename user 'test3'@'%' to 'test1'@'%';		修改帐户和host
+
