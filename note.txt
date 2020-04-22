@@ -16,4 +16,24 @@ mysql show grants;			查看当前用户权限；
 mysql select Host,User from user;			查看mysql数据库的user表，显示了用户名和用户应连接的Host
 mysql drop user 'yangxin'@'localhost';		删除用户
 mysql rename user 'test3'@'%' to 'test1'@'%';		修改帐户和host
+cat -A /etc/passwd #显示全部字符；
+cat -n /etc/passwd #显示行数；
+lsattr
+chattr +i  #不能修改；
+chattr -i
+chattr +a #可touch，可追加；
+chmod u+s  #给二进制文件添加管理员权限；
+chmod g+s #给二进制文件添加管理员属组权限；目录加上s权限之后，之后所有生成的目录和文件的属主跟原目录一样，可让这个目录属于某一个组；
+chmod o+t #给/tmp这样的公共目录，谁的东西谁作主，别人不能删除；
+find /etc -type d -name "sshd*"
+find /etc -type f -mtime -1 #1天以内；
+find / -inum 33583395 #查找硬链接；
+find /root -type f -mmin -60 #60分钟以内；
+find /root -size -10k -exec ls -lh {} \;
+find /opt /usr /var -name foo.scala -type f     # search multiple dirs
+find . -type f \( -name "*.c" -o -name "*.sh" \)                       # *.c and *.sh files  
+find . -type f \( -name "*cache" -o -name "*xml" -o -name "*html" \)   # three patterns
+find . -type f -not -name "*.html"                                # find all files not ending in ".html"  
+find . -type f -name "*.java" -exec grep -l StringBuffer {} \;    # list the file name which have "StringBuffer";
+find . -type f -name "*.gz" -exec zgrep 'GET /foo' {} \;          # search for a string in gzip files;
 
