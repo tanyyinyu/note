@@ -36,4 +36,83 @@ find . -type f \( -name "*cache" -o -name "*xml" -o -name "*html" \)   # three p
 find . -type f -not -name "*.html"                                # find all files not ending in ".html"  
 find . -type f -name "*.java" -exec grep -l StringBuffer {} \;    # list the file name which have "StringBuffer";
 find . -type f -name "*.gz" -exec zgrep 'GET /foo' {} \;          # search for a string in gzip files;
+groupadd -g 1010 gt #指定组号添加组；
+groupdel gt
+useradd ut #新建用户，自动生成一样的组名，一般情况下gid跟uid一致；
+useradd -u 1004 -g grp2 user3 #指定uid 和组(组名或组号） 新建用户；
+useradd -u 1004 -g grp2 -d /home/tan -s /sbin/nologin user4 #-d指定家目录，-s指定用户的shell（不能登陆）；
+useradd -M user5 #不建家目录；
+userdel user8 #删除配置文件，不删除家目录;
+userdel -r user7 #删除用户同时删除家目录；
+usermod -u 1010 username #修改uid
+usermod -g 1010 username #修改gid(主组）
+usermod -d /home/kdjjf username #修改用户家目录，目录里内容要添加，不然用户使用有问题；
+usermod -s /sbin/nologin username #修改用户的shell(不能登陆）
+id user1 #查看用户的ID和组信息；
+usermod -G grp2, user5 username #指定扩展组，指定一个扩展组后，再指定一个扩展组，原来的会被替换，要同时指定需要的多个扩展组；
+passed -l user1 #锁定密码
+passwd -u user1 #解锁
+usermod -L user1 #锁定，加了一个!在密码字段的最前面
+usermod -U user1 #解锁
+passwd --stdin user5 #修改密码，明文显示，只输入一次；
+echo “111222” |passwd --stdin user5 #一条命令修改好命令；
+echo -e “12312312\n12312312” |passwd user3 #一条命令修改密码，输入了两次密码；
+yum install -y expect #安装expect
+mkpasswd -l 12 -s 0 #使用mkpasswd命令，-l 指定密码长度，-s 指定多少位特殊符号
+visudo
+visudo "root ALL=(ALL) NOPASSWD: /usr/bin/ls, usr/bin/cat" #配置文件样例；
+mkfs
+mke2fs -b 8192 /dev/sdb1 #8k的块，适合存储视频，图片；
+mke2fs -b 2048 /dev/sdb1 #2K的小块，适合存储大量小文件；
+-m 预留空间，reserved for the super user
+mke2fs -m 0.1 /dev/sdb1 #可以只预留0.1;
+mke2fs -i 8192 -t ext4 /dev/sdb1 #1个inode对应少一点空间，有更多inode,一般inode对应16K;
+blkid #查看所有块设备；
+mount -o rw /dev/sdb #读写；
+mount -o ro /dev/sdb #只读；
+mount -o remount /dev/sdb #重新挂载；
+mount -o remount, ro /dev/sdb
+swap dd if=/dev/zero of=/tmp/newdisk bs=1M count=100 #dd用于复制文件，从/dev/zero复制零到/tmp/newdisk(块大小为1M，数量100)
+mkswap -f /tmp/newdisk #格式化；
+swapon /tmp/newdisk #把swap挂载；
+swapoff /tmp/newdisk #卸载
+gzip
+gzip -d #解压；
+gzip -c #新建压缩文件；
+bzip2
+bzip2 -d
+bzip2 -c #新建压缩文件；
+xz 
+xz -d
+xz -c #新建压缩文件;
+zip 1.txt.zip 1.txt
+zip -r 123.zip 123/
+unzip 1.txt.zip
+unzip dir1.zip -d ~/  #解压缩到指定路径；
+tar -cvf dir3.tar --exclude dir3/1.txt --exclude dir3/2.txt dir3 1.txt		#多个不打包的文件，要逐一列出来；
+tar -tf aming.tar #list content;
+rpm -ql
+yum grouplist
+yum groupinstall
+yum info 
+yum clean all
+yum repolist all
+yum install zsh --downloadonly
+yum install zsh --downloadonly --downloaddir=/tmp/
+ldd /bin/ls
+yumdownloader
+yum install -y bash-completion
+cut -c 1 #截取第1个字符
+sort -n #按数字大小排；
+sort
+sort -r #反向
+wc -l统计行数
+wc -m统计字符数，包括换行符和tab;
+wc -w 统计单词数，单词以空格和换行分格
+uniq, 去除连续重复的行；（跟sort一起使用）；-c统计重复个数；
+split -b 1K a.txt	#以1K的大小切割文件，连原文件共762个文件，自动命名；
+split -b 1K a.txt as.		#指定前缀命名；
+split -l 1000 a.txt	#以每1000行分隔文件；
+[ -d dira ] && mkdir dirb	#第一条命令成功，执行第二条命令；第一条命令不成功，第二条命令不执行；相当于两条命令同命相连；
+[ -d dirc ] || mkdir dirc		#||表示或者，第一条命令结果为1，第二条命令就不执行；第一条命令结果为0，执行第二条命令，二选一；
 
