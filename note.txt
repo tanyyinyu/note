@@ -188,4 +188,9 @@ echo -e "\033[34m 蓝色字 \033[0m"
 echo -e "\033[35m 紫色字 \033[0m"
 echo -e "\033[36m 天蓝字 \033[0m"
 echo -e "\033[37m 白色字 \033[0m"
+iptables -F #清空配置，运行后生效，重启恢复默认；
+service iptabes save #运行后目前配置保存为默认；
+yum install -y iptables-services #安装iptables-services;
+iptables -nvL #查看目前iptables设置；
+iptables -A INPUT -s 192.168.188.1 -p tcp --sport 1234 -d 192.168.188.128 --dport 80 -j DROP #-A新增规则，-s源IP，-p协议类型, --sport 1234源端口1234, -d接目的IP, --dport 80目的端口80, 符合前面条件的, -j DROP丢弃包；
 
