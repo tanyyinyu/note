@@ -55,8 +55,8 @@ passwd -u user1 #解锁
 usermod -L user1 #锁定，加了一个!在密码字段的最前面
 usermod -U user1 #解锁
 passwd --stdin user5 #修改密码，明文显示，只输入一次；
-echo “111222” |passwd --stdin user5 #一条命令修改好命令；
-echo -e “12312312\n12312312” |passwd user3 #一条命令修改密码，输入了两次密码；
+echo "111222" |passwd --stdin user5 #一条命令修改好命令；
+echo -e "12312312\n12312312" |passwd user3 #一条命令修改密码，输入了两次密码；
 yum install -y expect #安装expect
 mkpasswd -l 12 -s 0 #使用mkpasswd命令，-l 指定密码长度，-s 指定多少位特殊符号
 visudo
@@ -155,4 +155,37 @@ awk -F ':' 'NR>40 || NR==1' passwd		#NF,NR作为条件使用；
 awk -F ":" '{(tot=tot+$3)} END {print tot}' passwd		#循环语句，没有END遍历一行就print一次tot;END类似continue;
 awk -F ":" 'NR>7 {print $(NR/7)":"NR":"$NF}' passwd	#$加数字是第几段；
 tail -3 passwd |awk -F ":" '$3="root"'					#对第三段赋值；cat file.txt | awk '{ if ($7~/'"$i"'/) {print $0} }'| wc -l ; #用选取一段匹配另外一个变量；
+command audit  #https://blog.csdn.net/tanyyinyu/article/details/100945326
+sar -n DEV 1 10		#-n显示网络相关信息，DEV按网卡列出，1代表1秒刷一次，10代表显示10个结果；
+sar -n DEV -f /var/log/sa/sa16 #-f从文件里读取信息，命令的前半部分跟查看网络实时信息一样；
+sar -q 1 10 #查看实时负载情况；
+sar -q -f /var/log/sa/sa16 #从文件里查看负载情况；
+ar -b 1 10 #查看实时磁盘情况；
+sar -b -f /var/log/sa/sa16 #从文件里查看磁盘情况；
+cat /var/log/sa/sar16 #sardd文件可以直接用cat查看；
+network nload
+iostat -dx		#-d不显示cpu相关信息，-x显示详细信息，不带参数显示简单信息；
+iostate -dx 1 10 #动态显示10次，不带10一直动态显示；
+iotop
+ps -elf
+ps -eLf #查看线程的命令；
+ps -elf #跟 ps aux差不多；
+ss -an
+ss -an |grep -i listen
+tcpdump -nn -i ens33 #-nn以数字形式显示IP和端口，-i指定网卡，侦听网卡的数据；
+tcpdump -nn -i ens33 port 80 #指定侦听端口，可以查看指定服务的数据；
+tcpdump -i ens33 -nn not port 22 and port 80 and not host 192.168.31.101 #同时增加几个条件；
+tcpdump -nn -i ens33 -c 100 -w 1.cap #-c指定抓包的数量；-w将抓包内容写到文件里，文件不能直接cat;
+tcpdump -nn -r 1.cap #-nn也起作用，读取抓包文件，也可以让wireshark分析；
+tshark -i ens33 -n -t a -R http.request -T fields -e "frame.time" -e "ip.src" -e "http.host" -e "http.request.method" -e "http.request.uri"			 #-t a抓包的时间；-R指定的过滤条件是http请求；-T指定输出格式，内容跟在-e后面，时间，源，域名，请求方法，请求的链接；
+network mii-tool ens33
+network ethtool ens33
+echo -e "\033[30m 黑色字 \033[0m"
+echo -e "\033[31m 红色字 \033[0m"
+echo -e "\033[32m 绿色字 \033[0m"
+echo -e "\033[33m 黄色字 \033[0m"
+echo -e "\033[34m 蓝色字 \033[0m"
+echo -e "\033[35m 紫色字 \033[0m"
+echo -e "\033[36m 天蓝字 \033[0m"
+echo -e "\033[37m 白色字 \033[0m"
 
