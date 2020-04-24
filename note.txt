@@ -19,15 +19,6 @@ mysql rename user 'test3'@'%' to 'test1'@'%';		修改帐户和host
 cat -A /etc/passwd #显示全部字符；
 cat -n /etc/passwd #显示行数；
 lsattr
-nUID                      1000			#设置最小的使用ftp服务的用户UID；
-
-useradd ftpuser			#新增使用ftp的用户；
-mkdir /data/ftp			#ftp的访问目录；
-chown ftpuser:ftpuser /data/ftp		#修改目录属主；
-
-pure-pw useradd user1 -u ftpuser -d /data/ftp 	#制作虚拟用户user1, 映射到用户ftpuser，要输入密码;
-pure-pw mkdb		#生成密码文件，文件不能cat查看；
-pure-pw list 			#查看用户；chattr +i  #不能修改；
 chattr -i
 chattr +a #可touch，可追加；
 chmod u+s  #给二进制文件添加管理员权限；
