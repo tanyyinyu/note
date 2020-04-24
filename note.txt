@@ -193,4 +193,75 @@ service iptabes save #运行后目前配置保存为默认；
 yum install -y iptables-services #安装iptables-services;
 iptables -nvL #查看目前iptables设置；
 iptables -A INPUT -s 192.168.188.1 -p tcp --sport 1234 -d 192.168.188.128 --dport 80 -j DROP #-A新增规则，-s源IP，-p协议类型, --sport 1234源端口1234, -d接目的IP, --dport 80目的端口80, 符合前面条件的, -j DROP丢弃包；
-
+iptables -I INPUT -p tcp --dport 80 -j DROP #-I添加规则在第一行；指定端口必须要指定-p;
+iptables -D INPUT -p tcp --dport 80 -j DROP #-D删除一条规则，具体内容跟你增加时一样；
+iptables -nvl --line-number #查看规则编号，可按编号删除；
+iptables -D INPUT 7 #删除INPUT中编号7规则；
+iptables -I INPUT -s 192.168.1.0/24 -i eth0 -j ACCEPT #-i接收包的网卡；
+iptables -P OUTPUT DROP #-P修改链的默认策略，OUTPUT链全盘丢弃，如果ssh连接中，连接会中断；-P设置会变成默认的一部分，除非另外修改，-F不能清除；
+iptables -P OUTPUT ACCEPT #OUTPUT改成接受；
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT   #开放的端口连接后，与这些服务相关的，建立连接的其他通信放行，没有这句可能会有问题；
+iptables -I INPUT -p icmp --icmp-type 8 -j DROP  #ping出去，不被ping的设置;
+route add default gw 192.168.100.1 		#设置网关为机器A的内网网卡IP；
+#route - show / manipulate the IP routing table，修改影响力是很大的，设置这个后原来网卡配置文件的网关可能没用了，会导致一些问题，如ping不通外网，要比较注意，查找问题会比较麻烦。
+route -n  #查看网关；
+echo "1" > /proc/sys/net/ipv4/ip_forward  #开启转发；
+iptables -t nat -A POSTROUTING -s 192.168.100.100 -o ens33 -j MASQUERADE  #转发设置 
+iptables -t nat -A PREROUTING -d 192.168.133.130 -p tcp --dport 1122 -j DNAT --to 192.168.100.100:22		#设置访问A外网IP1122端口转发到电脑B的22端口；
+iptables -t nat -A POSTROUTING -s 192.168.100.100 -j SNAT --to 192.168.133.130		#设置电脑B的IP发出的包，改成为电脑A外网IP，跟A1122端口通信等于跟B通信；
+service iptables save	#会把规保存到/etc/sysconfig/iptables;
+service iptables restart		#重启后从配置文件里加载配置；
+iptables-save > ipt.txt		#把配置文件保存在自定义文件里；
+iptables-restore < ipt.txt		#从文件恢复规则；
+iptables-save -t nat > ipt2.txt
+iptables-restore < ipt2.txt
+firewall-cmd --get-default-zone
+firewall-cmd --get-zones		#查看所有zones;
+firewall-cmd --get-zone-of-interface=ens33
+firewall-cmd --get-active-zones  	#查看活动的zone和对应的接口;
+firewall-cmd --set-default-zone=block  ##修改default-zone，原来public-zone网卡受影响；
+firewall-cmd --zone=public --add-interface=lo		#添加网卡到一个zone;
+firewall-cmd --zone=dmz --change-interface=lo #改变网卡的zone;
+firewall-cmd --zone=dmz  --remove-interface=lo		#从一个zone中删除网卡；
+firewall-cmd --get-services 		#查看所有services;
+firewall-cmd --zone=public --add-service=http #临时增加services，重启后需要重新添加;
+firewall-cmd --zone=public --remove-service=http	 #删除services;
+firewall-cmd --zone=public --add-service=http --permanent  #使用permanent参数后，修改更新在配置文件里，重启后也会加载；
+firewall-cmd --zone=block --add-port=80/tcp		#添加端口；
+firewall-cmd --zone=block --list-port		#列出zone的端口；
+firewall-cmd --zone=block --remove-port=80/tcp
+firewall-cmd --zone=public --add-port=8730/udp --permanent  
+firewall-cmd --zone=public --add-port=8730/tcp --permanent  
+firewall-cmd --reload 
+firewall-cmd --zone=public --list-ports 
+firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address="192.168.1.188" port port=20-21 protocol=tcp accept'	#开通某一个IP访问20-21端口；
+firewall-cmd --permanent --add-rich-rule='rule protocol value=icmp drop'  #不能被ping的设置；
+firewall-cmd --zone=public --add-masquerade --permanent  #外网网卡的zone添加masquerade;#转发；
+firewall-cmd --remove-masquerade --permanent   #取消的命令
+firewall-cmd  --direct --passthrough ipv4 -t nat -A POSTROUTING -o ens33 -s 172.16.92.0/24 -j MASQUERADE  #转发；
+firewall-cmd --reload  #转发；
+firewall-cmd --zone=public --add-forward-port=port=1122:proto=tcp:toport=22:toaddr=172.16.92.154 --permanent  #端口映射；
+firewall-cmd --reload  #端口映射；
+firewall-cmd --zone=public --remove-forward-port=port=1122:proto=tcp:toport=22:toaddr=172.16.92.154 --permanent   #取消的命令；
+firewall-cmd --list-all #查看zone的所有规则；
+firewall-cmd --list-all-zones	#查看所有zone的所有规则；
+crontab -e		#打开一个类似vi的界面，按上面的格式逐行写下计划；
+crontab -l		#查看计划；
+crontab 1 3 */2 1-6 1,2,3,4,5  /bin/bash ~/123.sh	#1-6月,双数的日子的3时1分，周一到周五实施计划；
+systemctl start crond		#启动计划；
+systemctl status crond		#查看服务状态；
+crontab -u user1 -l	#查看某个user的计划；
+crontab /var/spool/cron/user1			#这个路径保存着计划的文件，可用于备份，以每个用户名为名；
+crontab 1 3 */2 1-6 1,2,3,4,5  /bin/bash ~/123.sh >> 123.log	2>> 123e.log	#可以保存正确和错误信息；
+rsync -avL	#-L把软链接的源文件同步到目的地；
+rsync -avP	#-P显示同步过程，增加速率的显示；
+rsync -avu	#-u目的地的文件版本比源版本新，则不更新；
+rsync -avz 	#-z传输时压缩；
+rsync -av --delete /tmp/rsyn1/ 172.16.92.142:/tmp/rsyn2/ #--delete删除目的地 中 源 没有的文件，原来是增量同步；
+rsync -av --exclude "*.log" /tmp/rsyn1/ 172.16.92.142:/tmp/rsyn2/ #--exclude排除某些文件不同步；
+rsync -av -e "ssh -p 1122" test1/ 192.168.133.132:/tmp/test2/  	#可以结合iptable nat表的应用，外网机器ssh内外网机器:1122 <-> 内网机器:22,可通过一台机器从外部访问只具内网连接的机器；
+dmesg  #硬件相关日志，保存在内存
+/var/log/dmesg  #系统启动记录的日志
+last #登陆系统的记录 日志；
+lastb  #登陆系统失败的记录 日志；
+/var/log/secure  #登陆系统的相关信息 日志；
