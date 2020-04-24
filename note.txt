@@ -289,5 +289,11 @@ nginx deny 127.0.0.1;	#黑名单模式；
 nginx location ~ .*(upload|image|attachment|cache)/.*\.(php|pl|py|jsp|asp|sh|cgi)$  { deny all; } 
 nginx if ($http_user_agent ~ 'Spider/3.0|YoudaoBot|Tomato') { return 403；} #识别发送信息的浏览器，屏敝掉一些浪费流量的机器人；
 nginx if ($request_uri ~ (abc|123)) { return 404;	}  ##限制指定的URL，带有abc或123的URL都返回404;
+nginx server { listen 80 default_server; resolver 119.29.29.29; location / { proxy_pass http://$host$request_uri； } }#正向代理；
+nginx server { listen       80; server_name  bbs.tany.com; location / { proxy_pass http://192.168.87.133; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; } } #反向代理；
+nginx upstream ape_com     {         ip_hash;         server 115.159.51.96:80; #服务器IP与端口；         server 47.104.7.242:80;     }     server     {         listen 80;         server_name www.apelearn.com;  #服务器的域名；         location /         {             proxy_pass http://ape_com;   #upstream             proxy_set_header Host $host;             proxy_set_header X-Real-IP $remote_addr;             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;         }     } #负载均衡，权重定义server 115.159.51.96:80 weight=100;
+nginx curl -k -H "host:bbs.aminglinux.cc" https://192.168.222.128/index.php #ssl curl;
+echo quit | openssl s_client -showcerts -servername bbs.tany.com -connect bbs.tany.com:443 > cacert.pem #ssl 从网页生成ssl密钥;
+curl --cacert cacert.pem https://bbs.tany.com -I #ssl curl;
 
 
