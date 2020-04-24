@@ -359,6 +359,7 @@ nginx; return 变量； return 200 "$args"; 显示出uri里的参数，即?后�
 nginx curl -A "kjlk" -x127.0.0.1:80 www.abc.com #指定agent;
 nginx rewrite if return https://blog.csdn.net/tanyyinyu/article/details/102797072  细节
 nginx 反向代理 location细节 buffer cache  https://blog.csdn.net/tanyyinyu/article/details/102811656
+nginx curl -x127.0.0.1:80 --refer blog.tany.com http://bbs.tany.com/static/image/common/forum.gif -I -v #测试盗链接；
 
 
 
