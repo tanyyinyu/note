@@ -301,4 +301,20 @@ ssl server {     listen 80;     server_name bbs.tany.com;       rewrite ^/(.*)$ 
 nginx tcp stream {  log_format proxy '$remote_addr [$time_local] '                  '$protocol $status $bytes_sent $bytes_received '                  '$session_time "$upstream_addr" '                  '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"'; include /etc/nginx/conf.d/tcp/*.conf; #新增tcp目录，stream的主配置文件要放在tcp里； } #这是区别于nginx虚拟主机（http)的一个用法；在主配置文件/etc/nginx/etc/nginx.conf里要新增与http平衡的一个模块;
 nginx tcp upstream stream_backend {          server 192.168.87.137:22;   #端口应该不是80就是代理端口的用法，使用stream模块，这个子配置文件放到http模块里会报错； }  server {         listen        1122;         proxy_pass    stream_backend; access_log  /data/logs/tcp.log  proxy; }  #子配置文件；
 nginx tcp upstream 134 {        hash $remote_addr consistent;        server 192.168.1.134:22;     }     server {        listen 13422;        proxy_connect_timeout 10s;        proxy_timeout 300s;        proxy_pass 134;     }  #子配置文件2；
+php socker fastcgi_pass unix:/tmp/bbs.socket; #socket
+php www.conf错误日志 php_admin_value[error_log] = /var/log/fpm-php.www.log ;将错误保存在文件里，需要touch文件，权限要改为777,因为php需要写入; php_admin_flag[log_errors] = on  php_admin_value[error_reportion] = E_ALL ;添加语名，错误级别，将所有错误都保存，ini里有说明；
+phpinfo <?php phpinfo(); ?>
+php; slowlog = /tmp/php.slow request_slowlog_timeout = 1 ;php解释超过1秒就记录下来；
+php pool多个网站；[bbs] user = php-fpm group = php-fpm listen = /tmp/bbs.socket ;据此配置nginx虚拟主机文件; listen.mode = 0666 pm = dynamic      pm.max_children = 5 pm.start_servers = 2 pm.min_spare_servers = 1 pm.max_spare_servers = 3 slowlog = /tmp/php.slow request_slowlog_timeout = 1 php_flag[display_errors] = off ;以下设置在ini文件可定义，优先级比pool文件低，在pool文件定义时，需要在前面加php_admin_flag/ php_admin_value，flag for on/off; php_admin_value[error_log] = /var/log/fpm-php.www.log php_admin_flag[log_errors] = on php_admin_value[error_reportion] = E_ALL php_admin_value[open_basedir] = /data/wwwroot/bbs.tany.com:/tmp ;限制php服务的活动空间，/tmp目录也需要，会生成一些临时文件；
+mysql skip-grant #密码重置；
+mysql update user set authentication_string=password("aming-linux") where user='root';#密码重置，5.7.36后,不一定成功；
+mysql update user set password=password("aming-linux") where user='root'; #旧版本，密码重置；
+mysql; show variables like ‘slow%’; #查看slow参数；
+mysql; show variables like ‘long%’; #查看long参数；
+mysql; slow_query_log = ON slow_query_log_file = /data/mysql/aminglinux01-slow.log long_query_time = 2 #慢查询设置；slow log 设置配置文件;
+mysql; select sleep (5); #睡5秒；
+mysql; show processlist; #查询所有查询；
+mysql; show full processlist; #查询所有查询，显示完整命令；
+mysql; mysql -uroot -pxxxx -e "show processlist" #不进去数据库，翻回查询结果；
+
 
