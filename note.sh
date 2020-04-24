@@ -1,2 +1,2 @@
 #! /bin/bash
-grep $1 $NOTEDIR/note.txt 
+/usr/bin/grep --color=auto $1 $NOTEDIR/note.txt 

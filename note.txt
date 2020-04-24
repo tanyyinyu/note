@@ -295,5 +295,5 @@ nginx upstream ape_com     {         ip_hash;         server 115.159.51.96:80; #
 nginx curl -k -H "host:bbs.aminglinux.cc" https://192.168.222.128/index.php #ssl curl;
 echo quit | openssl s_client -showcerts -servername bbs.tany.com -connect bbs.tany.com:443 > cacert.pem #ssl 从网页生成ssl密钥;
 curl --cacert cacert.pem https://bbs.tany.com -I #ssl curl;
-
+ssl listen 443 ssl; ssl on;    ssl_certificate /etc/nginx/ssl/bbs.crt;    ssl_certificate_key /etc/nginx/ssl/bbs.key;    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 ;  #ssl设置
 
