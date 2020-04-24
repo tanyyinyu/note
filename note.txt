@@ -1,5 +1,5 @@
-alias viens33=‘vi /etc/sysconfig/network-scripts/ifcfg-ens33’
-unalias viens33
+alias viens33='vi /etc/sysconfig/network-scripts/ifcfg-ens33'
+
 mysql grant all on *.* to 'test_1'@'localhost' identified by '123456'; 修改test_1密码，测试有效
 mysql SET PASSWORD FOR 'test_1'@'localhost' = PASSWORD('123456789');	修改密码命令2,测试有效
 mysql alter user 'test_1'@'localhost' identified by '123456';	修改密码命令3,测试有效
@@ -19,7 +19,15 @@ mysql rename user 'test3'@'%' to 'test1'@'%';		修改帐户和host
 cat -A /etc/passwd #显示全部字符；
 cat -n /etc/passwd #显示行数；
 lsattr
-chattr +i  #不能修改；
+nUID                      1000			#设置最小的使用ftp服务的用户UID；
+
+useradd ftpuser			#新增使用ftp的用户；
+mkdir /data/ftp			#ftp的访问目录；
+chown ftpuser:ftpuser /data/ftp		#修改目录属主；
+
+pure-pw useradd user1 -u ftpuser -d /data/ftp 	#制作虚拟用户user1, 映射到用户ftpuser，要输入密码;
+pure-pw mkdb		#生成密码文件，文件不能cat查看；
+pure-pw list 			#查看用户；chattr +i  #不能修改；
 chattr -i
 chattr +a #可touch，可追加；
 chmod u+s  #给二进制文件添加管理员权限；
@@ -137,8 +145,8 @@ sed -n '1,5'p test.txt
 sed -n  '/root/'p passwd	#匹配root的正则，-n禁止打印无关内容, p把内容打印出来；
 sed -n -e '/sh$/'p -e '1,3'p  passwd		#-e指定多个条件,同时生效的行，会打印2次；
 sed -n -e '/nfs/'Ip  passwd		#I不区分大小写；
-sed '1,3’d passed #去除1-3行，后显示内容；
-sed ‘1,2s/ot/to/g’ passwd #1-2行中所有ot改成to显示出来；
+sed '1,3'd passed #去除1-3行，后显示内容；
+sed '1,2s/ot/to/g' passwd #1-2行中所有ot改成to显示出来；
 sed -r 's/([^:]*):(.*):([^:]*)/\3:\2:\1/' passwd		#第一段与最后一段的替换，\3 \2\1代表前面的小括号内容，-r可以识别扩展符号例如(), +;
 sed /sbin/nologin:x:1:1:bin:/bin:bin #上面命令的结果；
 sed 's/^.*$/111&/g' -i passwd		#&代表查找出来的内容，这里是全部匹配，在行前面加上111, -i把内容写入文件;
@@ -309,12 +317,49 @@ php pool多个网站；[bbs] user = php-fpm group = php-fpm listen = /tmp/bbs.so
 mysql skip-grant #密码重置；
 mysql update user set authentication_string=password("aming-linux") where user='root';#密码重置，5.7.36后,不一定成功；
 mysql update user set password=password("aming-linux") where user='root'; #旧版本，密码重置；
-mysql; show variables like ‘slow%’; #查看slow参数；
-mysql; show variables like ‘long%’; #查看long参数；
+mysql; show variables like 'slow%'; #查看slow参数；
+mysql; show variables like 'long%'; #查看long参数；
 mysql; slow_query_log = ON slow_query_log_file = /data/mysql/aminglinux01-slow.log long_query_time = 2 #慢查询设置；slow log 设置配置文件;
 mysql; select sleep (5); #睡5秒；
 mysql; show processlist; #查询所有查询；
 mysql; show full processlist; #查询所有查询，显示完整命令；
 mysql; mysql -uroot -pxxxx -e "show processlist" #不进去数据库，翻回查询结果；
+ftp; yum install -y epel-release; yum install -y pure-ftpd
+ftp; vi /etc/pure-ftpd/pure-ftpd.conf PureDB                        /etc/pure-ftpd/pureftpd.pdb       #使用文件存放用户和密码； MinUID                      1000                        #设置最小的使用ftp服务的用户UID；  useradd ftpuser                 #新增使用ftp的用户； mkdir /data/ftp                 #ftp的访问目录； chown ftpuser:ftpuser /data/ftp         #修改目录属主；  pure-pw useradd user1 -u ftpuser -d /data/ftp   #制作虚拟用户user1, 映射到用户ftpuser，要>输入密码; pure-pw mkdb            #生成密码文件，文件不能cat查看； pure-pw list                    #查看用户；  systemctl start pure-ftpd               #启动服务；
+ftp测试；yum install -y lftp lftp user1@127.0.0.1  #进入ftp的目录； put 上传 mput 多个文件上传 get  mget mirror   镜像服务器  mirror -R  反向镜像 -c  断点续传 -n 线程
+mysqladmin -uroot password 'baby123' #设置初始密码；
+mysqladmin -uroot -p'baby123' password 'baby321'  #修改密码；
+mysql; show create table tb_name\G; #建表语句；
+mysql; select user(); #查看当前用户；
+mysql; create table t1(`id` int(4), `name` char(40)) ENGINE=InnoDB DEFAULT CHARSET=utf8;   #修改字符集； #建表；
+mysql; show status; show variables; show variables like 'max_connect%'; 
+mysql; show grants;   #查看当前用户的权限；show grants for user2@192.168.133.1;  #显示一个用户在某个登陆IP的权限，可用于复制用户权限；
+mysql; grant all on db1.* to 'user3'@'%' identified by 'passwd';   #user3不限制登陆IP；
+mysql; grant all on *.* to 'user1' identified by 'passwd';  #可授权给所有IP；
+select count(*) from mysql.user;    #查询user表的行数；
+select * from mysql.db;   			#查询表的所有内容；尽量少做全匹配的操作，耗费资源；
+select db from mysql.db;  		#显示db字段；
+select db,user from mysql.db;   #显示两个字段；
+select * from mysql.db where host like '192.168.%';   #模糊查找；
+mysql; truncate table db1.t1;   #清空一个表；
+mysqldump -uroot -p123456 -d mysql > /tmp/mysql.sql  #备份表结构;
+innobackupex; rpm -ivh http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
+innobackupex;  yum install -y percona-xtrabackup-24.x86_64
+nginx; if ($request_method = POST) { return 405; } #不允许此方法；
+nginx; if (!-f $request_filename) { rewrite * ; }
+nginx; if ($request_usr ~* 'gid=\d{9,12}/') { rewrite * } #gid=123456789/符合条件；
+nginx; rewrite; break last意思是一样的，中断rewrite；
+nginx; location; break 中断，last 匹配完再从上到下走一次；
+nginx; return 直接使用在server {}段， return 403, 跟deny all是一样的；
+nginx; return 使用在if 段里；
+nginx; return 字符串； return 200 "error.";
+nginx; return html代码； return 200 "<html><script>window.location.href='//$host$request_uri';</script></html>";
+nginx; return 链接； return http://www.aminglinux.com/r.html; 类似rewrite, 也是302；
+nginx; return 变量； return 200 "$args"; 显示出uri里的参数，即?后面；
+nginx curl -A "kjlk" -x127.0.0.1:80 www.abc.com #指定agent;
+nginx rewrite if return https://blog.csdn.net/tanyyinyu/article/details/102797072  细节
+nginx 反向代理 location细节 buffer cache  https://blog.csdn.net/tanyyinyu/article/details/102811656
+
+
 
 
