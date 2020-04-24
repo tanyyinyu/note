@@ -265,3 +265,29 @@ dmesg  #硬件相关日志，保存在内存
 last #登陆系统的记录 日志；
 lastb  #登陆系统失败的记录 日志；
 /var/log/secure  #登陆系统的相关信息 日志；
+screen				#直接回车就进入了虚拟终端，在终端里的命令一直在运行，随时回到界面里查看；#退出ssh后也可再进入screen; #ctrl a组合键再按d退出虚拟终端，但不是结束;   
+screen -ls 			#查看虚拟终端列表；  
+screen -r id 		#进入指定的终端；
+screen -S aming   #命名一个虚拟终端；
+screen -r aming		#用名字恢复一个终端；
+/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql --datadir=/data/mysql &  #mysql启动；
+killall mysqld #读写完再kill，安全
+nginx rewrite if ( $host = blog.aminglinux.cc ) { rewrite /(.*)  http://www.aming.com/$1 permanent; }
+nginx rewrite  if ( $host = www.tany.com ) { rewrite "^/(.*)$"  http://blog.tany.com/$1 permanent; } #状态码301; 
+nginx rewrite /1.txt /2.txt redirect; #临时重定向，状态码302
+nginx auth_basic "User Authentication";              ## 认证弹窗提示语
+nginx auth_basic_user_file /etc/nginx/user_passwd;		#安装httpd-tools，命令htpasswd -c /etc/nginx/user_passwd user1创建第一个用户，再加用户的命令是htpasswd -m /etc/nginx/user_passwd user2;
+nginx curl -x127.0.0.1:80 -uuser1:123456  blog.tany.com/jiami/s1.txt -I
+nginx access_log /data/logs/blog.access.log main; #写在配置文件最后一行；
+nginx location  ~* \.(png|jpeg|gif|js|css|bmp|flv)$ { access_log off; } #location到后缀为.png等文件；#对于上面这些文件，不记录日志；
+logrotate -v  /etc/logrotate.d/nginx
+logrotate -vf /etc/logrotate.d/nginx	#-f代表强制执行，-v可观察执行过程；
+nginx location ~* \.(png|jpeg|gif|js|css|bmp|flv)$ { access_log off;	expires 1d; }
+nginx location ~* \.(png|jpeg|gif|js|css|bmp|flv)$ { valid_referers none blocked blog.tany.com; if ($invalid_referer) {	return 403;	} }
+nginx allow 127.0.0.1;	#白名单模式；deny all;
+nginx deny 127.0.0.1;	#黑名单模式；
+nginx location ~ .*(upload|image|attachment|cache)/.*\.(php|pl|py|jsp|asp|sh|cgi)$  { deny all; } 
+nginx if ($http_user_agent ~ 'Spider/3.0|YoudaoBot|Tomato') { return 403；} #识别发送信息的浏览器，屏敝掉一些浪费流量的机器人；
+nginx if ($request_uri ~ (abc|123)) { return 404;	}  ##限制指定的URL，带有abc或123的URL都返回404;
+
+
