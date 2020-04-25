@@ -386,6 +386,7 @@ seq 1 2 10 ##指定开始值与步长；
 shell while; 负载大发邮件脚本；#! /bin/bash while : do    i=`w |head -1 |awk -F "load average: " '{print $2}'|awk -F "." '{print $1}'`    if [ $i -eq 0 ]   #应该改成 $i -ge 10, 负载大时执行；       then         top -bn1 | mail -s "over load" ***@163.com    fi    sleep 10   #可以加到30秒； done
 echo -e "567\tkkkk"| while read line ; do echo $line ; echo "##"; done     #标准输入的一行都可以补read捕获；
 echo -e "567\nkkkk"| while read line ; do echo $line ; echo "##"; done      #如果换行了，代表输入两次，while循环两次；
+shell 数组；https://blog.csdn.net/tanyyinyu/article/details/103179566
 
 
 
