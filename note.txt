@@ -390,6 +390,20 @@ shell 数组；https://blog.csdn.net/tanyyinyu/article/details/103179566
 shell expect mysqldump 邮件 监控502 代码上线 https://blog.csdn.net/tanyyinyu/article/details/103187848
 shell 整合 13台 https://blog.csdn.net/tanyyinyu/article/details/103332597
 shell 整合 负载均衡三个wep mycat atlas https://blog.csdn.net/tanyyinyu/article/details/103442905
+memcached 默认启动systemctl -f启动调整growth factor ; 有不同大小的chunk，相同大小的chunk组成slab,slab是比较大的，一个slab会由多个page组成(内存分配单位）一个page大小为1M;
+memcached lazy expiration get时查看是否过期; LRU最近最少使用，分配给新记录；
+memcached 配置文件/etc/sysconfig/memcached
+memcached-tool 127.0.0.1:11211 stats #查看状态；curr_items, get hits; incr_hits
+memcached; nc tool; yum install nmap-ncat.x86_64;
+memcached; echo stats | nc 127.0.0.1 11211; #查看状态
+yum install -y libmemcached; memstat --servers=127.0.0.1:11211;#查看状态
+memcached; telnet 127.0.0.1 11211 #数据存储；
+memcached; 存储；先设置数据格式，flag, 有效期 大小；再输入数据；<command name> <key> <flags> <exptime> <bytes>\r\n <data block>\r\n   注：\r\n在windows下是Enter键       <command name> 可以是set, add, replace delete     set表示按照相应的<key>存储该数据，没有的时候增加，有的时候覆盖      add表示按照相应的<key>添加该数据,但是如果该<key>已经存在则会操作失败      replace表示按照相应的<key>替换数据,但是如果该<key>不存在则操作失败。      <key> 客户端需要保存数据的key     <flags> 是一个17位的无符号的整数(以十进制的方式表示)。    该标志将和需要存储的数据一起存储,并在客户端get数据时返回。 客户端可以将此标志用做特殊用途，此标志对服务器来说是不透明的。      <exptime> 为过期的时间。 若为0表示存储的数据永远不过期(但可被服务器算法：LRU 等替换)。 如果非0(unix时间或者距离此时的秒数),当过期后,服务器可以保证用户得不到该数据(以服务器时间为标准)。      <bytes> 需要存储的字节数，当用户希望存储空数据时<bytes>可以为0      <data block>需要存储的内容，输入完成后，最后客户端需要加上\r\n（直接点击Enter）作为结束标志。  
+memcached-tool 127.0.0.1:11211 dump > dump.txt  #备份；nc 127.0.0.1 11211 < dump.txt  #恢复; 设置时间0,长期有效的项目，恢复后就过期了，存的时候最好直接指定时间；重启后再恢复；
+php 增加memcache插件；$PHP_PATH/bin/phpize; ./configure --with-php-config=$PHP_PATH/bin/php-config; make ; make install ; php 7要使用比较新的memcahce;
+php 插件查询；$PHP_PATH/bin/php -i|grep dir #查询相关目录；grep ini #查询ini信息；-m #查询模块；
+php memcahced; pool设置 php_value[session.save_handler] = memcache php_value[session.save_path] = " tcp://127.0.0.1:11211 "
+
 
 
 
