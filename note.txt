@@ -403,7 +403,11 @@ memcached-tool 127.0.0.1:11211 dump > dump.txt  #备份；nc 127.0.0.1 11211 < d
 php 增加memcache插件；$PHP_PATH/bin/phpize; ./configure --with-php-config=$PHP_PATH/bin/php-config; make ; make install ; php 7要使用比较新的memcahce;
 php 插件查询；$PHP_PATH/bin/php -i|grep dir #查询相关目录；grep ini #查询ini信息；-m #查询模块；
 php memcahced; pool设置 php_value[session.save_handler] = memcache php_value[session.save_path] = " tcp://127.0.0.1:11211 "
-
+redis 安装； [root@draft src]# wget http://download.redis.io/releases/redis-4.0.1.tar.gz -c [root@draft src]#  tar zxf redis-4.0.1.tar.gz  [root@draft src]# mv redis-4.0.1 redis4 [root@draft src]# cd redis4 [root@draft redis4]# make && make install  #不用configure;
+redis 配置文件修改；解压缩目录里的conf文件；daemonize yes; logfile "/var/log/redis.log" ; appendonly yes # 开启aof; dir /data/redis #数据路径；
+redis -p /data/redis; redis-server /etc/redis.conf #启动；
+redis 数据类型；redis-cli #进入数据界面；string; list 一串串数据，加一个编号加1，先进后出；set 集合，使用集合做交集，并集；sorted set 集合，每个元素是一组数据，一个编号一个值；hash 一个数据 有多对键值；
+redis 更多数据操作，安全修改端口；增加密码 vi /etc/redis.conf   #修改配置文件，后启动redis; requirepass password   #增加此语句，增加password; redis-cli -h 127.0.0.1 -p  16000 -a 'password'； 安全设置 vi /etc/redis.conf   #修改配置文件，后启动redis; rename-command CONFIG shezhi   #增加此语句; shezhi get bind   #测试新的命名； 1) "bind" 2) "127.0.0.1"；
 
 
 
