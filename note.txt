@@ -376,7 +376,7 @@ lvs DR; RS;  vim /usr/local/sbin/lvs_rs.sh  #编缉脚本； #/bin/bash vip=192.
 keepalived DR模式；keepalived 配置文件设置 + LVS RS 运行DR模式脚本；https://blog.csdn.net/tanyyinyu/article/details/102965019
 shell if ；双条件 ; #! /bin/bash read -p "please input 1-100:" a if [ $a -gt 60 ] && [ $a -lt 80 ];   #等于    if [ $a -gt 60 -a $a -lt 80 ];   ; then     echo "group 2"; else     echo "group 3"; fi
 shell if ; 或者；#! /bin/bash echo $1 $2 if [ $1 -gt 5 -o $2 -gt 5 ];  #等于 if [ $1 -gt 5 ] || [ $2 -gt 5 ];  ; then     echo "ok"; else     echo "not ok"; fi
-shell if ; 判断；#-r判断文件是否可读；#-f判断是否存在而且为文件；#-d判断是否存在而且为目录； -e判断是否存在； -w判断是否可写； -x判断是否可运行；-z判断是否为空 ； -n判断是否不为空；(())可使用运算符;[]不能使用运算符；如< > == != >= <=;
+shell if ; 判断；#-r判断文件是否可读；#-f判断是否存在而且为文件；#-d判断是否存在而且为目录； -e判断是否存在； -w判断是否可写； -x判断是否可运行；-z判断变量是否为空 ； -n判断变量是否不为空;-s文件存在并且大小为非0;(())可使用运算符;[]不能使用运算符；如< > == != >= <=;
 shell if ; 判断； 例子：           m=`sed -n "$i"p /etc/passwd`;            echo $m            if [ -z "$m" ];    #如果没有双引号，输出就不正常, 空格让这句语句不正常，一般提示太多参数；                 then                    break;            fi
 shell 时间；   ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime    # yum -y install kde-l10n-Chinese    #机器要运行一次，之后可以注释掉；   localedef -c -f UTF-8 -i zh_CN zh_CN.UTF-8     export LC_ALL=zh_CN.UTF-8    echo 'LANG="zh_CN.UTF-8"' > /etc/locale.conf
 echo -e \c 最后不加上换行符号； 在行尾继续写； \f 换行但光标仍旧停留在原来的位置； 阶梯； \n 换行且光标移至行首； 等于回车； \r 光标移至行首，但不换行； 等于退回去，重新开始写一段同容； \t 插入tab； \v 与\f相同； \ 插入\字符；
@@ -387,6 +387,9 @@ shell while; 负载大发邮件脚本；#! /bin/bash while : do    i=`w |head -1
 echo -e "567\tkkkk"| while read line ; do echo $line ; echo "##"; done     #标准输入的一行都可以补read捕获；
 echo -e "567\nkkkk"| while read line ; do echo $line ; echo "##"; done      #如果换行了，代表输入两次，while循环两次；
 shell 数组；https://blog.csdn.net/tanyyinyu/article/details/103179566
+shell expect mysqldump 邮件 监控502 代码上线 https://blog.csdn.net/tanyyinyu/article/details/103187848
+shell 整合 13台 https://blog.csdn.net/tanyyinyu/article/details/103332597
+shell 整合 负载均衡三个wep mycat atlas https://blog.csdn.net/tanyyinyu/article/details/103442905
 
 
 
