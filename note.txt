@@ -408,7 +408,19 @@ redis 配置文件修改；解压缩目录里的conf文件；daemonize yes; logf
 redis -p /data/redis; redis-server /etc/redis.conf #启动；
 redis 数据类型；redis-cli #进入数据界面；string; list 一串串数据，加一个编号加1，先进后出；set 集合，使用集合做交集，并集；sorted set 集合，每个元素是一组数据，一个编号一个值；hash 一个数据 有多对键值；
 redis 更多数据操作，安全修改端口；增加密码 vi /etc/redis.conf   #修改配置文件，后启动redis; requirepass password   #增加此语句，增加password; redis-cli -h 127.0.0.1 -p  16000 -a 'password'； 安全设置 vi /etc/redis.conf   #修改配置文件，后启动redis; rename-command CONFIG shezhi   #增加此语句; shezhi get bind   #测试新的命名； 1) "bind" 2) "127.0.0.1"；
-
+redis slowlog; slowlog-log-slower-than 10000  #定义多长时间为慢，单位为微秒； slowlog-max-len 128   #记录条数为128条；slowlog get  #查看所有慢查询日志；#cli登陆后使用；slowlog get 1  #增加数字，显示最近的几条； slowlog len   #查看慢查询条数；
+redis php5;unzip phpredis.zip; phpredis-develop/ ;/usr/local/php-fpm/bin/phpize ;./configure --with-php-config=/usr/local/php-fpm/bin/php-config; make && make install; vi /usr/local/php-fpm/etc/php.ini #添加语句； extension=redis.so;
+redis 存储session; vim /usr/local/php-fpm/etc/php-fpm.conf  #增加如下语句； php_value[session.save_handler] = redis php_value[session.save_path] = " tcp://127.0.0.1:16000?auth=password "redis 主从；port 6380    #不同点；pidfile /var/run/redis_6380.pid    #不同点；logfile "/var/log/redis2.log"     #不同点；slaveof 127.0.0.1 16000    #不同点；masterauth password        #不同点；主开启了密码；redis get slaveof;
+redis 集群；redis-cli --cluster create 192.168.87.149:7000 192.168.87.149:7002 192.168.87.149:7004 192.168.87.150:7001 192.168.87.150:7003 192.168.87.150:7005 --cluster-replicas 1   #后面参数说明是一主一从，主从自动分配；redis-cli --cluster check 192.168.87.149:7000   #集群情况查看；
+redis 分配slot; redis-cli --cluster reshard 192.168.87.149:7002   #从随便一个主节点进入分配slot的过程里；>>> Performing Cluster Check (using node 192.168.87.149:7002)   #先显示目前状态;[OK] All 16384 slots covered.      #每个集群有16384个slot, slot主要用于分配数据存放在哪个主机，有算法实现，同样的键存取都通过同一台主机；一般主机平均分配这些slot,机器多每个主机的slot就少；分配好的slot在加入主机时可重新分配，灵活的增加主机；分配的slot多也即存放数据的权重高； How many slots do you want to move (from 1 to 16384)? 5462    #要删除节点的全部slot数; What is the receiving node ID? c077ca44511b89275f5f36d619d4cf3b9fe6fb3e   #接受slot的主机ID； Please enter all the source node IDs.   Type 'all' to use all the nodes as source nodes for the hash slots.   Type 'done' once you entered all the source nodes IDs. Source node #1: 7edd2df701545f1845ee8ce1f0202cf02166f2e9     #要删除节点的ID； Source node #2: done   #只从一个主机里删除，done结束； #直接输入all,会从所有主机上取出相应slot;   后续出现转移slot计划，输入yes; 没有slot的主机等于被删除，其从机会分配给另一个主机；redis-cli --cluster del-node 192.168.87.149:7002 #关闭节点；
+redis 添加主机；如果该主机之前使用过，需要把数据删除；rm -rf /data/redis_data/7002/* ；redis-server /etc/redis_7002.conf；redis-cli --cluster add-node 192.168.87.149:7002 192.168.87.149:7000    #添加为主机的命令；前面IP是要添加的节点，后面的IP是指从某一个主机登陆集群；
+redis 删除一个从机，再添加；redis-cli --cluster del-node 192.168.87.150:7003 d289bc65fdc510b35beb47f77b499a1160d3a5fd [root@second ~]# rm -rf /data/redis_data/7003/* [root@second ~]# redis-server /etc/redis_7003.conf  [root@second ~]# redis-cli --cluster add-node 192.168.87.150:7003 192.168.87.149:7000 --cluster-slave   #不指定主，但是会自动分配到没有从机的主机上；指定主机的命令如下； #redis-cli --cluster add-node 192.168.222.129:6380 192.168.222.128:6379 --cluster-slave --cluster-master-id 3c3a0c74aae0b56170ccb03a76b60cfe7dc1912e #添加从并指定主
+redis 自动分配slot; #redis-cli --cluster rebalance --cluster-threshold 1 192.168.222.128:6379   #试用了一下，在刚加入也第三个主节点时，自动分配，只在原来两个主机上重新分配，这第三个节点slot仍为零；
+redis 将集群外部redis实例中的数据导入到集群中去  redis-cli --cluster import 192.168.222.130:6379 --cluster-from 192.168.222.200:6379 --cluster-copy
+redis 集群 保存设置；redis-cli -c -h 192.168.87.149 -p 7000；cat conf文件 在data目录里；
+redis 集群 登陆其中一个主，使用cluster命令作操控；CLUSTER MEET 192.168.87.150 7007  #添加节点；cluster nodes  ；#查看信息；CLUSTER FORGET 6f97b462cd3d7fd3ea3a1903de0ee5af01e190e2   #删除一个节点；没有slot才能forget,有slot需要转移slot,再forget; 登陆集群的节点不能forget自己;
+redis 集群 登陆节点，让节点成为另一个主节点的slave; redis-cli -c -h 192.168.87.150 -p 7007   #以一个节点登陆集群；192.168.87.150:7007> CLUSTER REPLICATE 76e196de2ae3edcf7c8bfde9e4ad67e83319a8dc   #成为一个主的从；
+shell block iptables 封日志里访问次数多的IP，解封访问变少的IP；https://blog.csdn.net/tanyyinyu/article/details/103530822
 
 
 
